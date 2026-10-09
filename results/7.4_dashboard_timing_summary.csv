@@ -1,0 +1,7 @@
+panel,raw_median,raw_min,raw_max,aggregate_median,aggregate_min,aggregate_max,speedup
+Hourly regional energy (kWh),12106.15,9229.4,18149.0,360.7,259.2,585.4,33.562933185472694
+Daily network energy (kWh),8963.7,6831.5,12564.8,271.65,179.4,420.6,32.99723909442297
+Network energy per seven-day period from 1 Sep (kWh),10289.349999999999,6528.2,12460.7,222.25,100.1,436.8,46.29628796400449
+Daily energy for meter $meter (kWh),181.5,78.3,548.4,248.7,125.6,328.1,0.729794933655006
+Completeness by region (%),6399.75,2748.2,9857.2,222.0,88.8,368.3,28.8277027027027
+WHOLE DASHBOARD,12891.3,11686.2,18337.1,493.45,404.3,692.3,26.12483534299321

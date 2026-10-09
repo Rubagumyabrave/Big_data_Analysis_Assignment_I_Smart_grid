@@ -1,0 +1,2 @@
+rule,flags,detected,missed,false_flags,false_flag_pct,meters_with_false_flags,pct_meters_affected
+ratio>=2.0 or ratio<=0.3 vs median of same meter/slot/day type,474,40,0,0,0.0,0,0.0

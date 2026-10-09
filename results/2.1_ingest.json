@@ -1,0 +1,39 @@
+{
+  "route": "generator -> CSV file -> PostgreSQL COPY",
+  "started": "2026-10-08 17:11:40 CAT",
+  "dataset_info": {
+    "generator_version": "3.0",
+    "meters": 4000,
+    "days": 28,
+    "minutes_between_readings": 15,
+    "timezone": "CAT",
+    "start_inclusive": "2026-09-01T00:00:00+02:00",
+    "end_exclusive": "2026-09-29T00:00:00+02:00",
+    "planned_readings": 10752000,
+    "reading_fields": [
+      "meter_id",
+      "event_time",
+      "received_time",
+      "power_kw",
+      "voltage_v",
+      "current_a",
+      "frequency_hz",
+      "energy_kwh"
+    ],
+    "expected_counts": {
+      "emitted_readings": 10696848,
+      "unique_readings": 10643735,
+      "duplicate_readings": 53113,
+      "delayed_unique_readings": 213090,
+      "missing_readings": 108265
+    }
+  },
+  "dictionaries_consumed": 10696848,
+  "generation_seconds": 193.38815649999924,
+  "rows_committed": 10696848,
+  "load_seconds": 166.16016229999877,
+  "total_seconds": 368.77382320000106,
+  "csv_data_rows": 10696848,
+  "finished": "2026-10-08 17:18:23 CAT",
+  "all_match": true
+}

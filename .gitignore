@@ -1,0 +1,11 @@
+.env
+.venv/
+data/
+__pycache__/
+Assignment_I_October_2026.pdf
+~$*
+report/main.tex
+report/Smart_grid_Assignment.tex
+report/Assignment_I_LaTeX.zip
+report/Assignment_I_Report.docx
+report/Smart_grid_Report_preview.pdf

@@ -1,0 +1,3 @@
+2026-10-09 10:39:58,470 INFO Connected to broker: Success
+2026-10-09 10:40:05,138 INFO Taken from generator: 2000 - waiting for broker acknowledgements
+2026-10-09 10:40:06,142 INFO SUMMARY taken=2000 acknowledged=2000 failed=0 unacknowledged=0 rate=300 msg/s elapsed=6.67s

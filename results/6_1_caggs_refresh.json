@@ -1,0 +1,35 @@
+{
+  "energy_15min_region": {
+    "rows_before": 0,
+    "rows_after": 26880,
+    "refresh_start_cat": "2026-10-08 19:44:50",
+    "refresh_end_cat": "2026-10-08 19:46:39",
+    "refresh_seconds": 108.19,
+    "data_mb": 2.11,
+    "index_mb": 2.04,
+    "total_mb": 4.15,
+    "policy_job_id": 1002
+  },
+  "energy_hourly_region": {
+    "rows_before": 0,
+    "rows_after": 6720,
+    "refresh_start_cat": "2026-10-08 19:46:39",
+    "refresh_end_cat": "2026-10-08 19:47:31",
+    "refresh_seconds": 52.0,
+    "data_mb": 0.64,
+    "index_mb": 0.59,
+    "total_mb": 1.23,
+    "policy_job_id": 1003
+  },
+  "energy_daily_meter": {
+    "rows_before": 0,
+    "rows_after": 112000,
+    "refresh_start_cat": "2026-10-08 19:47:31",
+    "refresh_end_cat": "2026-10-08 19:47:59",
+    "refresh_seconds": 27.84,
+    "data_mb": 7.41,
+    "index_mb": 5.15,
+    "total_mb": 12.55,
+    "policy_job_id": 1004
+  }
+}

@@ -1,0 +1,16 @@
+query,table,median_ms,min_ms,max_ms
+Q1,energy_readings,125.282,122.759,177.445
+Q1,energy_time_compressed,90.619,89.685,92.779
+Q1,energy_meter_compressed,105.975,101.243,144.772
+Q2,energy_readings,263.722,260.799,279.588
+Q2,energy_time_compressed,186.16,177.33,192.416
+Q2,energy_meter_compressed,119.027,115.676,120.765
+Q3,energy_readings,1304.621,1291.579,1344.341
+Q3,energy_time_compressed,525.331,517.249,544.149
+Q3,energy_meter_compressed,268.441,263.122,271.923
+Q4,energy_readings,3.373,3.267,3.638
+Q4,energy_time_compressed,95.298,90.713,100.436
+Q4,energy_meter_compressed,4.074,3.975,4.341
+Q5,energy_readings,856.033,848.815,958.285
+Q5,energy_time_compressed,508.283,500.561,534.78
+Q5,energy_meter_compressed,425.131,422.822,457.725

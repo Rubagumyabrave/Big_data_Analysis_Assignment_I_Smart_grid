@@ -1,0 +1,43 @@
+8.1 run started 2026-10-09 09:27:22 CAT
+
+=== Dataset ===
+Region-hour rows from SQL: 6,720; complete grid: 6,720 (10 regions x 672 hours); absent region-hours: 0
+Readings per region-hour: min=1562, median=1584, max=1597 (planned 400 meters x 4 = 1,600)
+Total energy: 3,853,704.346816 kWh (cleaned table total 3,853,704.346816)
+Handling: absent hours would stay NaN (never filled with 0); targets keep observed totals; rows with any missing predictor are excluded, no imputation.
+
+=== Features (forecast origin = 00:00 CAT of the target day) ===
+                 feature                     lag_or_window    earliest_usable_target
+                 lag_24h                          lag 24 h 2026-09-02 00:00:00+02:00
+                 lag_48h                          lag 48 h 2026-09-03 00:00:00+02:00
+                lag_168h                         lag 168 h 2026-09-08 00:00:00+02:00
+           prev_day_mean      window 24 h ending at origin 2026-09-02 00:00:00+02:00
+prev_week_same_hour_mean window 168 h (7 same-hour values) 2026-09-08 00:00:00+02:00
+                    hour                  calendar, no lag 2026-09-01 00:00:00+02:00
+                     dow                  calendar, no lag 2026-09-01 00:00:00+02:00
+                  region               categorical, no lag 2026-09-01 00:00:00+02:00
+
+=== Leakage checks (latest source hour end <= forecast origin, all 6,720 rows) ===
+  lag_24h                    True
+  lag_48h                    True
+  lag_168h                   True
+  prev_day_mean              True
+  prev_week_same_hour_mean   True
+
+=== Training lookback exclusion ===
+Training rows before exclusion: 3,360; excluded (missing lookback): 1,680; retained: 1,680
+
+=== Split sizes and date limits ===
+     split  rows  usable_rows              first_target               last_target  rows_missing_predictors
+     train  3360         1680 2026-09-08 00:00:00+02:00 2026-09-14 23:00:00+02:00                     1680
+validation  1680         1680 2026-09-15 00:00:00+02:00 2026-09-21 23:00:00+02:00                        0
+      test  1680         1680 2026-09-22 00:00:00+02:00 2026-09-28 23:00:00+02:00                        0
+
+=== Feature example (Region 1, 22 Sep 18:00-20:00) ===
+  region                hour_start                    origin  energy_kwh  lag_24h            lag_24h_source  lag_48h  lag_168h  prev_day_mean  prev_week_same_hour_mean
+Region 1 2026-09-22 18:00:00+02:00 2026-09-22 00:00:00+02:00     714.171  706.750 2026-09-21 18:00:00+02:00  583.235   702.399        622.388                   670.577
+Region 1 2026-09-22 19:00:00+02:00 2026-09-22 00:00:00+02:00     686.233  684.005 2026-09-21 19:00:00+02:00  572.581   669.029        622.388                   642.704
+Region 1 2026-09-22 20:00:00+02:00 2026-09-22 00:00:00+02:00     627.071  623.828 2026-09-21 20:00:00+02:00  521.385   609.603        622.388                   588.586
+
+Saved data\forecast_dataset.pkl and results\8_1_forecast_dataset.csv (6,720 rows)
+8.1 run finished 2026-10-09 09:27:44 CAT

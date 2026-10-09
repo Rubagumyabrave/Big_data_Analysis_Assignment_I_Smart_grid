@@ -1,0 +1,344 @@
+{
+  "uid": "energy-aggregate",
+  "title": "Aggregate",
+  "timezone": "Africa/Kigali",
+  "editable": true,
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [
+    "assignment1"
+  ],
+  "time": {
+    "from": "2026-09-22T00:00:00+02:00",
+    "to": "2026-09-29T00:00:00+02:00"
+  },
+  "timepicker": {
+    "refresh_intervals": []
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "meter",
+        "label": "Meter",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "smartgrid"
+        },
+        "query": "SELECT meter_id::text FROM meters ORDER BY meter_id",
+        "definition": "SELECT meter_id::text FROM meters ORDER BY meter_id",
+        "refresh": 1,
+        "current": {
+          "text": "1000000000",
+          "value": "1000000000"
+        },
+        "includeAll": false,
+        "multi": false
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Hourly regional energy (kWh)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "smartgrid"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "smartgrid"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT v.bucket AS time, v.region AS metric,\n       sum(v.energy_kwh) AS energy_kwh, sum(v.reading_count) AS reading_count\nFROM energy_hourly_region v\nWHERE v.bucket >= time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali') AND v.bucket < (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day')\nGROUP BY 1, 2 ORDER BY 1, 2"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kwatth",
+          "decimals": 1,
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 1,
+            "showPoints": "never"
+          },
+          "displayName": "${__field.labels.metric}"
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "^(Time|time|period|region|completeness_pct|energy_kwh.*)$"
+            }
+          }
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Daily network energy (kWh)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "smartgrid"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "smartgrid"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time_bucket('1 day', v.bucket, 'Africa/Kigali') AS time,\n       sum(v.energy_kwh) AS energy_kwh, sum(v.reading_count) AS reading_count\nFROM energy_15min_region v\nWHERE v.bucket >= time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali') AND v.bucket < (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day')\nGROUP BY 1 ORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kwatth",
+          "decimals": 1,
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "lineWidth": 1,
+            "showPoints": "never"
+          },
+          "displayName": "Energy (kWh)"
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "^(Time|time|period|region|completeness_pct|energy_kwh.*)$"
+            }
+          }
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Network energy per seven-day period from 1 Sep (kWh)",
+      "type": "barchart",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "smartgrid"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "smartgrid"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT to_char(time_bucket('7 days', v.bucket, TIMESTAMPTZ '2026-09-01 00:00+02'), 'DD Mon') AS period,\n       sum(v.energy_kwh) AS energy_kwh, sum(v.reading_count) AS reading_count\nFROM energy_15min_region v\nWHERE v.bucket >= time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali') AND v.bucket < (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day')\nGROUP BY time_bucket('7 days', v.bucket, TIMESTAMPTZ '2026-09-01 00:00+02')\nORDER BY time_bucket('7 days', v.bucket, TIMESTAMPTZ '2026-09-01 00:00+02')"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kwatth",
+          "decimals": 1,
+          "custom": {},
+          "displayName": "Energy (kWh)"
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "^(Time|time|period|region|completeness_pct|energy_kwh.*)$"
+            }
+          }
+        }
+      ],
+      "options": {
+        "xField": "period",
+        "orientation": "vertical",
+        "showValue": "always",
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Daily energy for meter $meter (kWh)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "smartgrid"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "smartgrid"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT v.bucket AS time, sum(v.energy_kwh) AS energy_kwh, sum(v.reading_count) AS reading_count\nFROM energy_daily_meter v\nWHERE v.meter_id = $meter AND v.bucket >= time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali') AND v.bucket < (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day')\nGROUP BY 1 ORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kwatth",
+          "decimals": 1,
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "lineWidth": 1,
+            "showPoints": "never"
+          },
+          "displayName": "Energy (kWh)"
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "^(Time|time|period|region|completeness_pct|energy_kwh.*)$"
+            }
+          }
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Completeness by region (%)",
+      "type": "bargauge",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "smartgrid"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "smartgrid"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH registered AS (SELECT region, count(*) AS meters FROM meters GROUP BY region),\n     observed AS (\n        SELECT v.region, sum(v.reading_count) AS reading_count\n        FROM energy_15min_region v\n        WHERE v.bucket >= time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali') AND v.bucket < (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day')\n        GROUP BY v.region)\nSELECT g.region, coalesce(o.reading_count, 0) AS reading_count,\n       g.meters * 96 * (extract(epoch FROM (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day') - time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali')) / 86400) AS planned_readings,\n       100.0 * coalesce(o.reading_count, 0) / (g.meters * 96 * (extract(epoch FROM (time_bucket('1 day', $__timeTo()::timestamptz - INTERVAL '1 microsecond', 'Africa/Kigali') + INTERVAL '1 day') - time_bucket('1 day', $__timeFrom()::timestamptz, 'Africa/Kigali')) / 86400)) AS completeness_pct\nFROM registered g LEFT JOIN observed o USING (region)\nORDER BY substring(region FROM 8)::int"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 2,
+          "custom": {},
+          "displayName": "${__data.fields.region}",
+          "min": 95,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "^(Time|time|period|region|completeness_pct|energy_kwh.*)$"
+            }
+          }
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        },
+        "showUnfilled": true
+      }
+    }
+  ]
+}

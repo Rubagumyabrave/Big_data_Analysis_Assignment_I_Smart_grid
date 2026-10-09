@@ -1,0 +1,9 @@
+feature,lag_or_window,earliest_usable_target
+lag_24h,lag 24 h,2026-09-02 00:00:00+02:00
+lag_48h,lag 48 h,2026-09-03 00:00:00+02:00
+lag_168h,lag 168 h,2026-09-08 00:00:00+02:00
+prev_day_mean,window 24 h ending at origin,2026-09-02 00:00:00+02:00
+prev_week_same_hour_mean,window 168 h (7 same-hour values),2026-09-08 00:00:00+02:00
+hour,"calendar, no lag",2026-09-01 00:00:00+02:00
+dow,"calendar, no lag",2026-09-01 00:00:00+02:00
+region,"categorical, no lag",2026-09-01 00:00:00+02:00

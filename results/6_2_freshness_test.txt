@@ -1,0 +1,48 @@
+SETUP: hypertable freshness_test (event_time TIMESTAMPTZ, energy_kwh DOUBLE PRECISION)
+       continuous aggregate freshness_hourly: hourly CAT bucket, sum(energy_kwh), count(*),
+       WITH NO DATA, materialized_only = true; no refresh policy
+       refresh policies on freshness_hourly: 0; materialized_only = True
+
+Test time (CAT)          : 2026-10-08 19:53:26 CAT
+H (last completed hour)  : 2026-10-08 18:00:00 CAT to 2026-10-08 19:00:00 CAT
+Older hour (H - 48 h)    : 2026-10-06 18:00:00 CAT to 2026-10-06 19:00:00 CAT
+Chosen event_times       : 1 kWh at 2026-10-06 18:10:00 CAT, 0.5 kWh at 2026-10-06 18:25:00 CAT, 2 kWh at 2026-10-08 18:10:00 CAT
+
+STAGE 1: insert 1 kWh into the older hour, refresh ONLY the older hour (real-time off)
+  INSERT event_time=2026-10-06 18:10:00 CAT energy_kwh=1.0  (at 2026-10-08 19:53:27 CAT)
+  CALL refresh_continuous_aggregate(older hour) done; materialized_only = True
+  Aggregate:
+    older hour 2026-10-06 18:00:00 CAT: 1.0 kWh, 1 row(s)
+    hour H     2026-10-08 18:00:00 CAT: no bucket returned
+
+STAGE 2: insert 0.5 kWh into the older hour and 2 kWh into hour H (no refresh, real-time off)
+  INSERT event_time=2026-10-06 18:25:00 CAT energy_kwh=0.5  (at 2026-10-08 19:53:27 CAT)
+  INSERT event_time=2026-10-08 18:10:00 CAT energy_kwh=2.0  (at 2026-10-08 19:53:27 CAT)
+  Raw table:
+    older hour 2026-10-06 18:00:00 CAT: 1.5 kWh, 2 row(s)
+    hour H     2026-10-08 18:00:00 CAT: 2.0 kWh, 1 row(s)
+  Aggregate:
+    older hour 2026-10-06 18:00:00 CAT: 1.0 kWh, 1 row(s)
+    hour H     2026-10-08 18:00:00 CAT: no bucket returned
+
+STAGE 3: enable real-time aggregation (still no refresh)
+  ALTER MATERIALIZED VIEW ... materialized_only = false -> now False
+  Aggregate (real-time on):
+    older hour 2026-10-06 18:00:00 CAT: 1.0 kWh, 1 row(s)
+    hour H     2026-10-08 18:00:00 CAT: 2.0 kWh, 1 row(s)
+
+STAGE 4: manually refresh both complete hours, then query with real-time off again
+  CALL refresh_continuous_aggregate(older hour .. end of H) done; materialized_only = True (stored results only)
+  Raw table:
+    older hour 2026-10-06 18:00:00 CAT: 1.5 kWh, 2 row(s)
+    hour H     2026-10-08 18:00:00 CAT: 2.0 kWh, 1 row(s)
+  Aggregate:
+    older hour 2026-10-06 18:00:00 CAT: 1.5 kWh, 2 row(s)
+    hour H     2026-10-08 18:00:00 CAT: 2.0 kWh, 1 row(s)
+
+CHECK older hour = 1.5 kWh / 2 rows and hour H = 2 kWh / 1 row: PASS
+
+6.1 policy window at the test time: 2026-10-05 19:53:26 CAT to 2026-10-08 18:53:26 CAT (start_offset 3 days, end_offset 1 hour)
+  older hour 2026-10-06 18:00:00 CAT: could be refreshed (bucket fully inside the window)
+  hour H     2026-10-08 18:00:00 CAT: NOT refreshable yet (bucket not fully inside the window)
+  Hour H becomes refreshable from 2026-10-08 20:00:00 CAT (one hour after it ends).

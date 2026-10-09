@@ -1,0 +1,121 @@
+mode,run,panel,ms
+raw,1,Hourly regional energy (kWh),12876.3
+raw,1,Daily network energy (kWh),6831.5
+raw,1,Network energy per seven-day period from 1 Sep (kWh),8870.8
+raw,1,Daily energy for meter $meter (kWh),191.1
+raw,1,Completeness by region (%),2762.9
+raw,1,WHOLE DASHBOARD,13028.1
+aggregate,1,Hourly regional energy (kWh),355.5
+aggregate,1,Daily network energy (kWh),277.4
+aggregate,1,Network energy per seven-day period from 1 Sep (kWh),240.9
+aggregate,1,Daily energy for meter $meter (kWh),306.3
+aggregate,1,Completeness by region (%),152.8
+aggregate,1,WHOLE DASHBOARD,484.2
+raw,2,Hourly regional energy (kWh),11336.0
+raw,2,Daily network energy (kWh),10033.5
+raw,2,Network energy per seven-day period from 1 Sep (kWh),12460.7
+raw,2,Daily energy for meter $meter (kWh),233.6
+raw,2,Completeness by region (%),7939.5
+raw,2,WHOLE DASHBOARD,12650.1
+aggregate,2,Hourly regional energy (kWh),392.2
+aggregate,2,Daily network energy (kWh),272.6
+aggregate,2,Network energy per seven-day period from 1 Sep (kWh),216.2
+aggregate,2,Daily energy for meter $meter (kWh),280.0
+aggregate,2,Completeness by region (%),250.0
+aggregate,2,WHOLE DASHBOARD,504.2
+raw,3,Hourly regional energy (kWh),13289.4
+raw,3,Daily network energy (kWh),8275.0
+raw,3,Network energy per seven-day period from 1 Sep (kWh),6718.4
+raw,3,Daily energy for meter $meter (kWh),435.2
+raw,3,Completeness by region (%),7144.3
+raw,3,WHOLE DASHBOARD,13503.3
+aggregate,3,Hourly regional energy (kWh),259.2
+aggregate,3,Daily network energy (kWh),179.4
+aggregate,3,Network energy per seven-day period from 1 Sep (kWh),100.1
+aggregate,3,Daily energy for meter $meter (kWh),125.6
+aggregate,3,Completeness by region (%),88.8
+aggregate,3,WHOLE DASHBOARD,404.3
+raw,4,Hourly regional energy (kWh),9598.4
+raw,4,Daily network energy (kWh),12491.4
+raw,4,Network energy per seven-day period from 1 Sep (kWh),6704.7
+raw,4,Daily energy for meter $meter (kWh),121.1
+raw,4,Completeness by region (%),6906.3
+raw,4,WHOLE DASHBOARD,12754.5
+aggregate,4,Hourly regional energy (kWh),365.9
+aggregate,4,Daily network energy (kWh),270.7
+aggregate,4,Network energy per seven-day period from 1 Sep (kWh),124.4
+aggregate,4,Daily energy for meter $meter (kWh),222.8
+aggregate,4,Completeness by region (%),248.3
+aggregate,4,WHOLE DASHBOARD,496.0
+raw,5,Hourly regional energy (kWh),10354.0
+raw,5,Daily network energy (kWh),8924.9
+raw,5,Network energy per seven-day period from 1 Sep (kWh),11454.5
+raw,5,Daily energy for meter $meter (kWh),78.3
+raw,5,Completeness by region (%),6096.3
+raw,5,WHOLE DASHBOARD,11686.2
+aggregate,5,Hourly regional energy (kWh),585.4
+aggregate,5,Daily network energy (kWh),386.8
+aggregate,5,Network energy per seven-day period from 1 Sep (kWh),371.4
+aggregate,5,Daily energy for meter $meter (kWh),279.8
+aggregate,5,Completeness by region (%),368.3
+aggregate,5,WHOLE DASHBOARD,692.3
+raw,6,Hourly regional energy (kWh),13266.8
+raw,6,Daily network energy (kWh),7991.4
+raw,6,Network energy per seven-day period from 1 Sep (kWh),6528.2
+raw,6,Daily energy for meter $meter (kWh),171.9
+raw,6,Completeness by region (%),6703.2
+raw,6,WHOLE DASHBOARD,13403.8
+aggregate,6,Hourly regional energy (kWh),371.0
+aggregate,6,Daily network energy (kWh),267.0
+aggregate,6,Network energy per seven-day period from 1 Sep (kWh),210.2
+aggregate,6,Daily energy for meter $meter (kWh),266.8
+aggregate,6,Completeness by region (%),216.5
+aggregate,6,WHOLE DASHBOARD,490.9
+raw,7,Hourly regional energy (kWh),9229.4
+raw,7,Daily network energy (kWh),12564.8
+raw,7,Network energy per seven-day period from 1 Sep (kWh),10895.2
+raw,7,Daily energy for meter $meter (kWh),386.0
+raw,7,Completeness by region (%),2748.2
+raw,7,WHOLE DASHBOARD,12748.9
+aggregate,7,Hourly regional energy (kWh),343.0
+aggregate,7,Daily network energy (kWh),251.8
+aggregate,7,Network energy per seven-day period from 1 Sep (kWh),228.3
+aggregate,7,Daily energy for meter $meter (kWh),201.6
+aggregate,7,Completeness by region (%),170.6
+aggregate,7,WHOLE DASHBOARD,437.1
+raw,8,Hourly regional energy (kWh),18149.0
+raw,8,Daily network energy (kWh),12213.1
+raw,8,Network energy per seven-day period from 1 Sep (kWh),9957.3
+raw,8,Daily energy for meter $meter (kWh),163.1
+raw,8,Completeness by region (%),9857.2
+raw,8,WHOLE DASHBOARD,18337.1
+aggregate,8,Hourly regional energy (kWh),489.2
+aggregate,8,Daily network energy (kWh),420.6
+aggregate,8,Network energy per seven-day period from 1 Sep (kWh),436.8
+aggregate,8,Daily energy for meter $meter (kWh),328.1
+aggregate,8,Completeness by region (%),361.6
+aggregate,8,WHOLE DASHBOARD,591.3
+raw,9,Hourly regional energy (kWh),9968.7
+raw,9,Daily network energy (kWh),9002.5
+raw,9,Network energy per seven-day period from 1 Sep (kWh),11566.4
+raw,9,Daily energy for meter $meter (kWh),163.7
+raw,9,Completeness by region (%),5873.6
+raw,9,WHOLE DASHBOARD,11812.0
+aggregate,9,Hourly regional energy (kWh),334.9
+aggregate,9,Daily network energy (kWh),309.2
+aggregate,9,Network energy per seven-day period from 1 Sep (kWh),304.0
+aggregate,9,Daily energy for meter $meter (kWh),203.2
+aggregate,9,Completeness by region (%),227.5
+aggregate,9,WHOLE DASHBOARD,496.3
+raw,10,Hourly regional energy (kWh),14918.6
+raw,10,Daily network energy (kWh),8671.8
+raw,10,Network energy per seven-day period from 1 Sep (kWh),10621.4
+raw,10,Daily energy for meter $meter (kWh),548.4
+raw,10,Completeness by region (%),4436.8
+raw,10,WHOLE DASHBOARD,15317.5
+aggregate,10,Hourly regional energy (kWh),309.0
+aggregate,10,Daily network energy (kWh),270.2
+aggregate,10,Network energy per seven-day period from 1 Sep (kWh),192.9
+aggregate,10,Daily energy for meter $meter (kWh),230.6
+aggregate,10,Completeness by region (%),180.1
+aggregate,10,WHOLE DASHBOARD,421.1

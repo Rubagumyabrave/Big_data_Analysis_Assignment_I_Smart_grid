@@ -1,0 +1,16 @@
+query,table,median_ms,min_ms,max_ms
+Q1,energy_readings_3h,117.841,114.123,143.046
+Q1,energy_readings,122.202,118.813,125.265
+Q1,energy_readings_week,142.889,135.989,148.572
+Q2,energy_readings_3h,285.877,285.302,294.098
+Q2,energy_readings,278.389,271.83,293.745
+Q2,energy_readings_week,325.244,322.38,335.755
+Q3,energy_readings_3h,2393.123,2291.072,2461.628
+Q3,energy_readings,1275.567,1229.697,1355.417
+Q3,energy_readings_week,1270.898,1170.581,1298.129
+Q4,energy_readings_3h,6.934,6.714,7.468
+Q4,energy_readings,6.409,3.712,8.019
+Q4,energy_readings_week,2.825,2.595,3.035
+Q5,energy_readings_3h,902.35,876.845,913.439
+Q5,energy_readings,940.445,938.352,973.945
+Q5,energy_readings_week,929.109,915.106,1084.939

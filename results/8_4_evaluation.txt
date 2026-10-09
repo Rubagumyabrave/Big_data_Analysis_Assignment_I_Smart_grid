@@ -1,0 +1,50 @@
+8.4 run started 2026-10-09 09:56:27 CAT
+
+=== Test metrics, all 1,680 observations (error = predicted - actual) ===
+               method  MAE_kwh  RMSE_kwh    n
+previous-day baseline   42.708    79.403 1680
+ Ridge R1 (alpha=0.1)    4.557     5.798 1680
+MAE improvement: 89.3 %   RMSE improvement: 92.7 %
+Mean actual hourly regional consumption: 590.8 kWh (model MAE = 0.77 % of mean, baseline 7.23 %)
+Mean error (bias): baseline -1.733 kWh, model +0.397 kWh
+
+=== Per region (kWh, 168 test hours each) ===
+   region   n  baseline_MAE  model_MAE  baseline_RMSE  model_RMSE
+ Region 1 168        44.873      4.635         83.696       5.810
+ Region 2 168        41.629      4.490         76.811       5.610
+ Region 3 168        42.754      4.270         77.607       5.611
+ Region 4 168        34.856      3.993         64.233       5.087
+ Region 5 168        44.400      5.248         81.084       6.646
+ Region 6 168        39.426      3.754         74.766       4.693
+ Region 7 168        39.688      4.491         73.945       5.830
+ Region 8 168        55.967      5.774        102.057       7.168
+ Region 9 168        43.772      4.698         80.178       5.802
+Region 10 168        39.717      4.215         74.282       5.326
+
+=== Per test day (kWh, 240 observations each) ===
+              n  baseline_MAE  model_MAE  baseline_RMSE  model_RMSE
+hour_start                                                         
+Tue 22 Sep  240         4.991      4.578          6.337       5.821
+Wed 23 Sep  240         4.652      4.687          5.946       6.074
+Thu 24 Sep  240         5.311      5.187          6.866       6.551
+Fri 25 Sep  240         5.008      5.046          6.332       6.214
+Sat 26 Sep  240       135.695      3.611        146.326       4.583
+Sun 27 Sep  240         3.840      3.888          4.823       4.866
+Mon 28 Sep  240       139.461      4.900        150.122       6.192
+
+=== Highest actual test hour per region (ties -> earliest) ===
+   region           hour_start  energy_kwh  baseline_pred  model_pred  baseline_abs_err  model_abs_err
+ Region 1 Mon 2026-09-28 13:00     835.609        565.270     828.352           270.339          7.257
+ Region 2 Mon 2026-09-28 13:00     780.126        546.913     774.939           233.213          5.187
+ Region 3 Mon 2026-09-28 13:00     783.001        554.685     791.246           228.316          8.245
+ Region 4 Mon 2026-09-28 18:00     659.903        561.406     656.744            98.497          3.158
+ Region 5 Mon 2026-09-28 13:00     828.232        577.357     826.921           250.875          1.311
+ Region 6 Mon 2026-09-28 13:00     749.112        504.408     732.424           244.704         16.688
+ Region 7 Fri 2026-09-25 13:00     751.049        736.639     744.234            14.411          6.816
+ Region 8 Fri 2026-09-25 13:00    1016.555       1010.534    1013.730             6.021          2.824
+ Region 9 Wed 2026-09-23 13:00     808.960        796.886     804.652            12.073          4.308
+Region 10 Mon 2026-09-28 13:00     743.035        502.327     735.831           240.707          7.204
+Mean absolute error at the peak hours: baseline 159.916, model 6.300 kWh
+
+Saved results\8_4_overall_metrics.csv, _region_metrics.csv, _day_metrics.csv, _peak_hours.csv, 8_4_forecast_region1.png
+8.4 run finished 2026-10-09 09:56:28 CAT

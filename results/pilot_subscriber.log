@@ -1,0 +1,9 @@
+2026-10-09 10:39:37,166 INFO energy_live emptied, rows now: 0
+2026-10-09 10:39:37,410 INFO Connected to broker: Success
+2026-10-09 10:39:37,428 INFO Subscribed to energy/meters/#: ['Granted QoS 1']
+2026-10-09 10:39:37,428 INFO READY - start the publisher now
+2026-10-09 10:40:00,140 INFO Received 500 messages (waiting to insert: 1)
+2026-10-09 10:40:01,806 INFO Received 1000 messages (waiting to insert: 1)
+2026-10-09 10:40:03,473 INFO Received 1500 messages (waiting to insert: 1)
+2026-10-09 10:40:05,140 INFO Received 2000 messages (waiting to insert: 1)
+2026-10-09 10:40:08,177 INFO SUMMARY received=2000 redelivered=0 parse_errors=0 inserted=2000 insert_errors=0 energy_live_rows=2000 max_backlog=210

@@ -1,0 +1,19 @@
+{
+  "started": "2026-10-08T20:35:41",
+  "chrome": "154.0.8037.98",
+  "rows_before": 10643735,
+  "rows_after": 10643735,
+  "other_active_sessions": 0,
+  "warmup": 1,
+  "runs": 10,
+  "viewport": "1920x1400",
+  "browser_cache": "disabled",
+  "jobs_paused_and_resumed": [
+    1000,
+    1001,
+    1002,
+    1003,
+    1004
+  ],
+  "finished": "2026-10-08T20:38:53"
+}

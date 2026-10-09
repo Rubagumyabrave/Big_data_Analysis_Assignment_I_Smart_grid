@@ -1,0 +1,6 @@
+readings_by_midnight=379505
+readings_final=380036
+on_time_kwh=149400.545
+final_kwh=149552.723
+difference_kwh=152.178
+difference_pct_of_final=0.1018

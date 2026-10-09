@@ -1,0 +1,34 @@
+8.2 run started 2026-10-09 09:30:59 CAT
+
+=== Previous-day baseline on the test split (22-28 Sep) ===
+Forecast origins: 7 days at 00:00 CAT; regions: 10; hours per day: 24
+Test predictions: 1,680  (expected 7 x 24 x 10 = 1,680)
+Every source hour precedes its origin: True
+Baseline MAE  = 42.708 kWh
+Baseline RMSE = 79.403 kWh
+
+=== Sample predictions (Region 1, 22 Sep 00:00-05:00 and 13:00) ===
+  region                hour_start                    origin           baseline_source  energy_kwh  baseline_pred  error
+Region 1 2026-09-22 00:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 00:00:00+02:00     435.590        441.869  6.279
+Region 1 2026-09-22 01:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 01:00:00+02:00     438.892        435.374 -3.518
+Region 1 2026-09-22 02:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 02:00:00+02:00     437.375        432.510 -4.865
+Region 1 2026-09-22 03:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 03:00:00+02:00     447.844        443.206 -4.639
+Region 1 2026-09-22 04:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 04:00:00+02:00     463.197        468.380  5.183
+Region 1 2026-09-22 05:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 05:00:00+02:00     509.527        515.601  6.074
+Region 1 2026-09-22 13:00:00+02:00 2026-09-22 00:00:00+02:00 2026-09-21 13:00:00+02:00     818.259        813.309 -4.950
+
+=== MAE by test day (kWh) ===
+            MAE_kwh  RMSE_kwh
+hour_start                   
+Tue 22 Sep    4.991     6.337
+Wed 23 Sep    4.652     5.946
+Thu 24 Sep    5.311     6.866
+Fri 25 Sep    5.008     6.332
+Sat 26 Sep  135.695   146.326
+Sun 27 Sep    3.840     4.823
+Mon 28 Sep  139.461   150.122
+
+Reference, same baseline on validation (15-21 Sep): MAE 42.053, RMSE 78.337 kWh
+
+Saved results\8_2_baseline_predictions.csv (1,680 rows)
+8.2 run finished 2026-10-09 09:30:59 CAT

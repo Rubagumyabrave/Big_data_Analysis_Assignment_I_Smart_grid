@@ -1,0 +1,22 @@
+{
+  "tag": "compression",
+  "tables": [
+    "energy_readings",
+    "energy_time_compressed",
+    "energy_meter_compressed"
+  ],
+  "machine": "DESKTOP-Q9RBV34",
+  "client": "psycopg2 2.9.13 (Python 3.11.9)",
+  "timer": "Python time.perf_counter, from execute() to fetchall() returning the last row",
+  "cache_state": "warm (1 warm-up run before 5 measured runs)",
+  "session_start_cat": "2026-10-08 18:58:21.541",
+  "session_end_cat": "2026-10-08 18:58:55.065",
+  "session_seconds": 33.5,
+  "results_match": {
+    "Q1": true,
+    "Q2": true,
+    "Q3": true,
+    "Q4": true,
+    "Q5": true
+  }
+}

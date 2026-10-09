@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: assignment1
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

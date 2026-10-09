@@ -1,0 +1,31 @@
+8.3 run started 2026-10-09 09:34:13 CAT
+
+Shared predictors: numeric ['lag_24h', 'lag_48h', 'lag_168h', 'prev_day_mean', 'prev_week_same_hour_mean'] (standardised), categorical ['region', 'hour', 'dow'] (one-hot)
+Preprocessing (scaler + encoder) is fitted on training rows only, inside each pipeline.
+Training rows: 1,680 (08 Sep 00:00 - 14 Sep 23:00); validation rows: 1,680
+
+=== Training complete - validation comparison ===
+config           settings  train_rows  validation_rows  validation_mae_kwh  validation_rmse_kwh  fit_seconds
+    R1   Ridge(alpha=0.1)        1680             1680               4.442                5.645        0.571
+    R2   Ridge(alpha=1.0)        1680             1680               4.454                5.660        0.025
+    R3  Ridge(alpha=10.0)        1680             1680               4.968                6.363        0.025
+    R4 Ridge(alpha=100.0)        1680             1680               8.281               11.791        0.030
+(Previous-day baseline on validation: MAE 42.053, RMSE 78.337 kWh)
+
+Selected R1 (Ridge(alpha=0.1)), lowest validation MAE 4.442 kWh
+Frozen fitted pipeline (preprocessing + model) saved to data\forecast_model_frozen.joblib; no refitting on validation or test data.
+
+=== Test predictions with the frozen model (22-28 Sep) ===
+Test predictions: 1,680 (same rows as the baseline: 1,680); every lag source precedes its origin: True
+
+Sample test predictions (Region 1, 22 Sep):
+  region                hour_start  energy_kwh  baseline_pred  model_pred
+Region 1 2026-09-22 00:00:00+02:00     435.590        441.869     439.501
+Region 1 2026-09-22 01:00:00+02:00     438.892        435.374     439.505
+Region 1 2026-09-22 02:00:00+02:00     437.375        432.510     442.381
+Region 1 2026-09-22 03:00:00+02:00     447.844        443.206     439.552
+Region 1 2026-09-22 04:00:00+02:00     463.197        468.380     467.518
+Region 1 2026-09-22 13:00:00+02:00     818.259        813.309     817.833
+
+Saved results\8_3_validation_comparison.csv and 8_3_test_predictions.csv (1,680 rows)
+8.3 run finished 2026-10-09 09:34:13 CAT

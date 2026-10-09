@@ -1,0 +1,902 @@
+\documentclass[11pt,a4paper]{article}
+% ==================================================
+% PACKAGES
+% ==================================================
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{textcomp}
+\hypersetup{
+    colorlinks  = true,
+    linkcolor   = blue,
+    urlcolor    = blue,
+    citecolor   = blue
+}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\setlist{nosep}
+\onehalfspacing
+\captionsetup{font=small,labelfont=bf}
+\setlength{\emergencystretch}{3em}
+% ==================================================
+% IMAGE HELPER
+% Uses the original file names (e.g. 1.1_a_broker_running.PNG, 5_1_daily_energy.png).
+% Looks in Screenshoots/, figures/, results/figures/ and the main folder,
+% with .PNG/.png/.JPG/.jpg, so the files can be uploaded to Overleaf either way.
+% ==================================================
+\makeatletter
+\newcommand{\safeimg}[2]{%
+\def\imgfound{}%
+\@for\imgdir:={Screenshoots/,screenshoots/,figures/,results/figures/,./}\do{%
+\@for\imgext:={.PNG,.png,.JPG,.jpg,.jpeg}\do{%
+\ifx\imgfound\@empty
+\IfFileExists{\imgdir#1\imgext}{\edef\imgfound{\imgdir#1\imgext}}{}%
+\fi}}%
+\ifx\imgfound\@empty
+\fbox{\parbox{0.6\textwidth}{\centering\vspace{1cm}\textbf{Image not found:} \detokenize{#1}\vspace{1cm}}}%
+\else
+\includegraphics[width=#2\textwidth]{\imgfound}%
+\fi}
+\makeatother
+% \fig{file name without extension}{width as fraction of text width}{caption}
+\newcommand{\fig}[3]{%
+\begin{figure}[H]
+\centering
+\safeimg{#1}{#2}
+\caption{#3}
+\end{figure}}
+\newcommand{\logo}[1]{\IfFileExists{logo.png}{\includegraphics[height=#1]{logo.png}}{}}
+% Yellow placeholder: replace before submission
+\newcommand{\fillin}[1]{\colorbox{yellow}{#1}}
+% ==================================================
+% HEADER
+% ==================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\logo{0.9cm}}
+\fancyhead[C]{Advanced Big Data Analytics}
+\fancyhead[R]{Assignment I}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{30pt}
+\addtolength{\topmargin}{-18pt}
+% ==================================================
+\begin{document}
+% ==================================================
+% COVER PAGE
+% ==================================================
+\thispagestyle{empty}
+\begin{center}
+\vspace*{1cm}
+\logo{4cm}
+
+\vspace{0.8cm}
+{\Large \textbf{ADVENTIST UNIVERSITY OF CENTRAL AFRICA}}
+
+\vspace{0.5cm}
+{\LARGE \textbf{Smart Energy Grid Analytics Using}}
+
+\vspace{0.2cm}
+{\LARGE \textbf{MQTT, TimescaleDB, Grafana and Python}}
+
+\vspace{0.5cm}
+{\large Advanced Big Data Analytics}
+
+\vspace{1.2cm}
+\begin{tabular}{|p{6cm}|p{3cm}|}
+\hline
+\textbf{Student Name} & \textbf{Student ID} \\
+\hline
+\fillin{Member 1 name} & \fillin{ID} \\
+\hline
+\fillin{Member 2 name} & \fillin{ID} \\
+\hline
+\fillin{Member 3 name} & \fillin{ID} \\
+\hline
+\end{tabular}
+
+\vspace{1.2cm}
+\begin{tabular}{rl}
+\textbf{Program:}  & MSc in Big Data Analytics \\
+\textbf{Course:}   & Advanced Big Data Analytics \\
+\textbf{Lecturer:} & \fillin{Lecturer name} \\
+\textbf{GitHub:}   & \fillin{\texttt{https://github.com/account/repository}} \\
+\textbf{Date:}     & \today \\
+\end{tabular}
+\vfill
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ==================================================
+\section{Introduction}
+
+A utility operates 4,000 smart meters spread over ten regions. Every meter reports one reading every 15 minutes, and, as in real networks, some readings arrive late, some arrive twice and some never arrive. Over 28 days (1--28 September) this produces about 10.7 million readings. This report presents a Big Data project that builds the complete data path for that grid on a single machine and uses it to answer operational questions.
+
+Readings are published through an \textbf{EMQX MQTT broker}, stored in \textbf{PostgreSQL with the TimescaleDB extension}, analysed with \textbf{Python and SQL}, pre-aggregated with \textbf{continuous aggregates}, displayed on \textbf{Grafana} dashboards, and used to train a \textbf{day-ahead forecasting model} with scikit-learn. All data comes from the supplied, unchanged generator \texttt{smart\_meter\_simulator.py}, and all times are Central Africa Time (CAT, Africa/Kigali).
+
+\subsection{Project Repository}
+
+All source code, SQL scripts, results and execution evidence are available at:
+
+\begin{center}
+\fillin{\url{https://github.com/account/repository}}
+\end{center}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lp{11cm}}
+\toprule
+\textbf{Path} & \textbf{Contents} \\
+\midrule
+\texttt{sql/} & 13 SQL scripts: database, schema, checks, quality, cleaning, chunks, compression, aggregates \\
+\texttt{src/} & Python scripts: MQTT publisher/subscriber, loader, benchmarks, analysis, dashboards, forecast \\
+\texttt{grafana/} & Provisioned data source and the two dashboard definitions \\
+\texttt{results/} & Result summaries (\texttt{.md}), benchmark CSV files and logs \\
+\texttt{results/figures/} & Charts produced by the analysis and forecast scripts \\
+\texttt{Screenshoots/} & Execution evidence (63 screenshots, listed at the end of this report) \\
+\texttt{.env.example} & Connection settings with placeholder passwords \\
+\texttt{requirements.txt} & Python packages \\
+\texttt{README.md} & Set-up and step-by-step reproduction instructions \\
+\bottomrule
+\end{tabular}
+\caption{Repository structure}
+\end{table}
+
+The full dataset is not committed (10.7 million rows, about 1.2\,GB as CSV). It is regenerated with \texttt{python src/ingest.py}, because the generator is deterministic. The \texttt{.env} file holding real passwords is excluded by \texttt{.gitignore}.
+
+% ==================================================
+\section{Business Problem}
+
+A grid operator needs reliable data before it can make decisions. This project addresses seven questions:
+
+\begin{itemize}
+\item \textbf{Reliable ingestion:} Can every reading travel from the meter, through the MQTT broker, into the database without being lost?
+\item \textbf{Data quality:} How many readings are duplicated, delayed or missing, and how should they be handled?
+\item \textbf{Storage design:} Which chunk interval and which compression layout give the best balance of storage and query speed?
+\item \textbf{Demand understanding:} When does demand peak, how do weekdays and weekends differ, and which regions and customer types drive consumption?
+\item \textbf{Anomaly detection:} Can abnormal spikes and drops in a meter's consumption be detected automatically?
+\item \textbf{Fast reporting:} How much faster are dashboards built on pre-computed aggregates, and do they give exactly the same answers?
+\item \textbf{Planning:} Can a regression model forecast tomorrow's hourly regional demand better than the rule ``same as yesterday''?
+\end{itemize}
+
+% ==================================================
+\section{Dataset Description}
+
+\subsection{Data Source}
+
+The supplied generator provides three functions: \texttt{meter\_metadata()} returns the 4,000 meters, \texttt{iter\_readings()} streams the readings in arrival order, and \texttt{dataset\_info()} / \texttt{anomaly\_events()} return reference counts and the 40 injected anomalies used to check our results.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Value} \\
+\midrule
+Meters & 4,000 (400 per region, 10 regions) \\
+Period & 1 Sep 00:00 -- 28 Sep 23:45 CAT (28 days) \\
+Reading interval & 15 minutes (2,688 slots per meter) \\
+Planned readings & 10,752,000 \\
+Emitted readings (including duplicates) & 10,696,848 \\
+Customer types & residential 2,584; commercial 1,010; industrial 406 \\
+\bottomrule
+\end{tabular}
+\caption{Dataset overview}
+\end{table}
+
+\subsection{Data Dictionary}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{>{\ttfamily}l l p{6.2cm} l}
+\toprule
+\textbf{\normalfont Column} & \textbf{Type} & \textbf{Meaning} & \textbf{Unit} \\
+\midrule
+\multicolumn{4}{l}{\textit{energy\_live and energy\_readings (same eight columns)}} \\
+meter\_id & BIGINT & Meter identifier (1000000000--1000003999) & -- \\
+event\_time & TIMESTAMPTZ & Start of the 15-minute interval & CAT \\
+received\_time & TIMESTAMPTZ & Simulated arrival time & CAT \\
+power\_kw & DOUBLE & Average power over the interval & kW \\
+voltage\_v & DOUBLE & Supply voltage & V \\
+current\_a & DOUBLE & Current & A \\
+frequency\_hz & DOUBLE & Grid frequency & Hz \\
+energy\_kwh & DOUBLE & Energy in the interval ($\approx$ power $\times$ 0.25\,h) & kWh \\
+\midrule
+\multicolumn{4}{l}{\textit{meters (4,000 rows)}} \\
+meter\_id & BIGINT, PK & Meter identifier & -- \\
+region & TEXT & Region 1 to Region 10 & -- \\
+customer\_type & TEXT & residential, commercial or industrial & -- \\
+base\_power\_kw & DOUBLE & Typical base load & kW \\
+power\_factor & DOUBLE & Real / apparent power (0.95) & ratio \\
+\bottomrule
+\end{tabular}
+\caption{Data dictionary}
+\end{table}
+
+Three tables were created by \texttt{sql/02\_schema.sql}: \texttt{energy\_live} (a regular table for the live MQTT pilot), \texttt{energy\_readings} (a hypertable with one-day chunks for the full history) and \texttt{meters}. The reading tables have no primary key, so duplicates can be stored first and investigated later. \texttt{src/load\_meters.py} loaded the 4,000 meter records (\texttt{SELECT count(*) FROM meters} = 4,000).
+
+% ==================================================
+\section{Environment}
+
+EMQX and PostgreSQL/TimescaleDB run as Docker containers on one laptop. The database \texttt{smart\_grid} has the \texttt{timescaledb} extension enabled and its time zone set to \texttt{Africa/Kigali}, so daily buckets start at CAT midnight.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{4.2cm}p{9.6cm}}
+\toprule
+\textbf{Component} & \textbf{Specification} \\
+\midrule
+CPU & Intel Core i7-6600U @ 2.60\,GHz, 2 cores / 4 logical processors \\
+RAM (host) & 15,784\,MB \\
+Operating system & Windows 10 Pro, version 10.0.19045 \\
+Storage & SSD (C:, Docker data and database files); HDD (D:, project folder and CSV) \\
+Docker VM & WSL2, 4 CPUs, 7.47\,GiB RAM, no per-container limits \\
+Python & 3.11.9 (virtual environment) \\
+MQTT broker & EMQX 6.3.1 \\
+Database & PostgreSQL 17.11 + TimescaleDB 2.30.2 \\
+shared\_buffers / work\_mem & 1911\,MB / 15294\,kB \\
+Parallel workers per gather / jit & 2 / off \\
+Dashboards & Grafana OSS (Docker, provisioned from files) \\
+\bottomrule
+\end{tabular}
+\caption{Environment configuration}
+\end{table}
+
+\fig{1.1_c_environment_2}{0.75}{CPU, EMQX version, Docker VM resources, container limits and PostgreSQL settings}
+
+The database shares a 4-CPU, 7.5\,GB virtual machine with the broker. This matters for the benchmarks: a parallel query can use at most three processes (leader + 2 workers), and tables larger than 1.9\,GB cannot stay in PostgreSQL's own cache.
+
+% ==================================================
+\section{Ingestion Pipeline}
+
+\subsection{MQTT Pilot Design}
+
+Before loading millions of rows, a pilot proved that readings survive the MQTT path. \texttt{src/publisher.py} takes the first 2,000 readings with \texttt{itertools.islice(iter\_readings(), 2000)} and publishes each as JSON to the topic \texttt{energy/meters/\{meter\_id\}} with QoS~1 and no retained messages, counting the broker acknowledgements (PUBACK). \texttt{src/subscriber.py}, started first, subscribes to \texttt{energy/meters/\#} at QoS~1 and inserts every message into \texttt{energy\_live}.
+
+\subsection{Pilot Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Stage} & \textbf{Run 1} & \textbf{Run 2 (fixed)} \\
+\midrule
+Readings taken from the generator & 2,000 & 2,000 \\
+Messages acknowledged by the broker & 2,000 & 2,000 \\
+Messages received by the subscriber & 1,817 & 2,000 \\
+Rows in \texttt{energy\_live} & 1,817 & 2,000 \\
+\bottomrule
+\end{tabular}
+\caption{Pilot counts at every stage}
+\end{table}
+
+In run 1, 183 messages were lost \emph{inside the broker}: the publisher had 2,000 acknowledgements, the subscriber logged no errors, and EMQX reported \texttt{delivery.dropped.queue\_full = 183}. The publisher sent about 1,200 messages per second while the subscriber wrote to the database inside its MQTT callback, so it stopped reading while it waited; its broker queue filled and EMQX discarded the overflow. A PUBACK only proves that the broker received a message, not that a subscriber got it.
+
+\fig{1.3_run1_emqx_dropped}{0.7}{Run 1: EMQX metrics showing 183 messages dropped because the subscriber queue was full}
+
+\textbf{Fix.} The subscriber now reads messages in one thread and writes to the database in a second thread through a queue, so reading never waits for the database (largest backlog: 133 rows), and the publisher is paced at 300 messages per second. Run 2 reached \textbf{2,000 at every stage} with no new drops. The 2,000 rows include 6 deliberate generator duplicates.
+
+\fig{1.3_run2_publisher_subscriber}{0.8}{Run 2: publisher (2,000 taken, 2,000 acknowledged) and subscriber (2,000 received)}
+
+\subsection{Full Historical Load}
+
+Publishing 10.7 million messages through MQTT would take hours, so \texttt{src/ingest.py} writes the complete \texttt{iter\_readings()} stream to a CSV file in batches and bulk-loads it with PostgreSQL \texttt{COPY} in one transaction, duplicates included.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Count / timing} & \textbf{Value} \\
+\midrule
+Expected readings (\texttt{dataset\_info()}) & 10,696,848 \\
+Readings consumed / CSV rows / table rows & 10,696,848 / 10,696,848 / 10,696,848 \\
+CSV generation & 193.4\,s \\
+Database load (first write to commit) & 166.2\,s \\
+Total & 368.8\,s \\
+Chunks / total size & 29 / 1,042.7\,MB \\
+\bottomrule
+\end{tabular}
+\caption{Full load: counts and timings}
+\end{table}
+
+All four counts are identical, so nothing was lost. There are 29 chunks rather than 28 because TimescaleDB aligns daily chunks to UTC midnight (02:00 CAT).
+
+% ==================================================
+\section{Data Quality and Cleaning}
+
+\subsection{Quality Measurement}
+
+\texttt{sql/04\_data\_quality.sql} builds the planned grid (4,000 meters $\times$ 2,688 slots) and compares it with the observed (meter\_id, event\_time) pairs. A reading is \emph{delayed} when it arrived more than 15 minutes after its interval started.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrl}
+\toprule
+\textbf{Measure} & \textbf{Measured} & \textbf{Reference} & \textbf{Rate} \\
+\midrule
+Planned readings & 10,752,000 & 10,752,000 & -- \\
+Emitted readings & 10,696,848 & 10,696,848 & -- \\
+Unique readings & 10,643,735 & 10,643,735 & 98.99\,\% complete \\
+Duplicate copies & 53,113 & 53,113 & 0.50\,\% \\
+Delayed readings & 213,090 & 213,090 & 2.00\,\% \\
+Missing readings & 108,265 & 108,265 & 1.01\,\% \\
+\bottomrule
+\end{tabular}
+\caption{Data-quality counts against the generator's reference values}
+\end{table}
+
+All six counts match the reference exactly. Even the worst meter (1000003622, Region 3, commercial) misses only 47 of 2,688 readings (1.7\,\%), and the worst meters are spread over regions and customer types, so the gaps are random rather than concentrated.
+
+\fig{2.2_a_dq_summary}{0.75}{Data-quality counts and comparison with the reference values}
+
+\subsection{Cleaning Duplicates}
+
+All 53,113 duplicate groups had exactly two copies, identical in every column, so there were no conflicting values to resolve. \texttt{sql/05\_clean\_duplicates.sql} numbers the copies with \texttt{row\_number()} and deletes copies 2+ inside one transaction; a second run deletes nothing.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+ & \textbf{Rows} & \textbf{Total energy (kWh)} \\
+\midrule
+Before cleaning & 10,696,848 & 3,872,863.89 \\
+After cleaning & 10,643,735 & 3,853,704.35 \\
+Removed & 53,113 & 19,159.55 \\
+\bottomrule
+\end{tabular}
+\caption{Effect of duplicate cleaning}
+\end{table}
+
+The final count equals the reference number of unique readings. Keeping duplicates would have overstated consumption by about 0.5\,\%.
+
+\textbf{Why missing readings are not stored as zero.} A missing reading means the consumption is \emph{unknown}, not zero. Zeros would understate totals, create false ``sudden drop'' anomalies, teach the forecast model fake low values, and hide the quality problem. The 108,265 gaps are therefore left as gaps.
+
+% ==================================================
+\section{Storage Design: Chunk Intervals}
+
+\subsection{Configurations}
+
+A hypertable is split into time ``chunks''. Small chunks let a query skip more data but add planning overhead; large chunks are cheaper to manage but force searches inside larger tables. The cleaned data was copied into three hypertables with identical indexes \texttt{(event\_time DESC)} and \texttt{(meter\_id, event\_time DESC)}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrr}
+\toprule
+\textbf{Table} & \textbf{Chunk interval} & \textbf{Chunks} & \textbf{Rows} \\
+\midrule
+\texttt{energy\_readings\_3h} & 3 hours & 225 & 10,643,735 \\
+\texttt{energy\_readings} & 1 day & 29 & 10,643,735 \\
+\texttt{energy\_readings\_week} & 7 days & 5 & 10,643,735 \\
+\bottomrule
+\end{tabular}
+\caption{The three chunk configurations (identical rows and sums)}
+\end{table}
+
+\subsection{Benchmark Results}
+
+\texttt{src/benchmark.py} ran five typical queries on each table: one warm-up run, then five measured runs, reporting the median. No other jobs ran during the session, and every query returned identical results on all three tables.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrl}
+\toprule
+\textbf{Query (median, ms)} & \textbf{3 hours} & \textbf{1 day} & \textbf{7 days} & \textbf{Main reason} \\
+\midrule
+Q1 hourly average, one day & \textbf{117.8} & 122.2 & 142.9 & small chunks read whole \\
+Q2 top 10 intervals, one week & 285.9 & \textbf{278.4} & 325.2 & daily chunks fit the week \\
+Q3 energy per meter, all data & 2,393.1 & 1,275.6 & \textbf{1,270.9} & 225 chunks: no parallel workers \\
+Q4 one meter, one week & 6.9 & 6.4 & \textbf{2.8} & fewer index lookups \\
+Q5 full scan & \textbf{902.4} & 940.4 & 929.1 & every row read anyway \\
+\bottomrule
+\end{tabular}
+\caption{Warm-cache medians for the three chunk intervals}
+\end{table}
+
+\fig{3.2_a_benchmark_results}{0.75}{Benchmark medians for the three chunk intervals}
+
+\textbf{Decision.} One-day chunks are never the slowest and are within 2\,\% of the best on four of five queries. Three-hour chunks fail on whole-table grouping (Q3 is 1.88$\times$ slower) and 7-day chunks are weakest on short time windows. One-day chunks are used for the rest of the project.
+
+% ==================================================
+\section{Compression}
+
+\subsection{Configurations}
+
+TimescaleDB can convert old chunks into a compressed, column-oriented format. Two layouts were compared on copies of the one-day table: \textbf{time-ordered} (\texttt{orderby event\_time DESC}) and \textbf{meter-segmented} (\texttt{segmentby meter\_id}, \texttt{orderby event\_time DESC}). Each received a 48-hour compression policy, and all 29 chunks were compressed. Row counts and sums stayed identical.
+
+\subsection{Storage Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Table} & \textbf{Total size} & \textbf{Ratio} & \textbf{Saved} & \textbf{Compression time} \\
+\midrule
+Uncompressed baseline & 1,356.7\,MB & 1.00 & -- & -- \\
+Time-ordered & 438.7\,MB & 3.09$\times$ & 67.7\,\% & 58.3\,s \\
+Meter-segmented & 501.6\,MB & 2.70$\times$ & 63.0\,\% & 116.7\,s \\
+\bottomrule
+\end{tabular}
+\caption{Storage and compression cost}
+\end{table}
+
+Time-ordered compression is smaller because it packs full 1,000-row batches, while meter segmentation makes batches of about 95 rows (one meter, one day) with more metadata.
+
+\subsection{Query Performance}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Query (median, ms)} & \textbf{Baseline} & \textbf{Time-ordered} & \textbf{Meter-segmented} \\
+\midrule
+Q1 hourly average, one day & 125.3 & \textbf{90.6} & 106.0 \\
+Q2 top 10 intervals, one week & 263.7 & 186.2 & \textbf{119.0} \\
+Q3 energy per meter & 1,304.6 & 525.3 & \textbf{268.4} \\
+Q4 one meter, one week & \textbf{3.4} & 95.3 & 4.1 \\
+Q5 full scan & 856.0 & 508.3 & \textbf{425.1} \\
+\bottomrule
+\end{tabular}
+\caption{Query medians on uncompressed and compressed tables}
+\end{table}
+
+\fig{4.3_a_benchmark_results}{0.75}{Benchmark medians: baseline vs the two compressed tables}
+
+Scans and aggregations became 15--79\,\% faster on both compressed tables because column storage reads only the needed columns. The single-meter lookup (Q4) decides the choice: time-ordered batches mix all meters, so finding one meter means decompressing every batch (95.3\,ms, 28$\times$ slower), while meter segmentation filters on \texttt{meter\_id} before decompressing (4.1\,ms). \textbf{Recommendation:} compress chunks older than 48 hours, segmented by \texttt{meter\_id}.
+
+% ==================================================
+\section{Analytical Results}
+
+All analysis uses the cleaned \texttt{energy\_readings} table (10,643,735 readings).
+
+\subsection{Demand Patterns}
+
+\fig{5_1_daily_energy}{0.85}{Daily network energy (weekend days highlighted)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Seven-day period} & \textbf{1--7 Sep} & \textbf{8--14 Sep} & \textbf{15--21 Sep} & \textbf{22--28 Sep} \\
+\midrule
+Energy (kWh) & 934,199.1 & 953,715.0 & 973,230.0 & 992,560.3 \\
+\bottomrule
+\end{tabular}
+\caption{Network energy per seven-day period}
+\end{table}
+
+An average weekday uses \textbf{146,571.5\,kWh} and an average weekend day \textbf{115,284.2\,kWh}, which is \textbf{21.3\,\% less}. Weekly energy grew steadily, \textbf{+6.2\,\%} from the first to the fourth week (about 2\,\% per week). The three highest 15-minute network demand intervals were all on Monday 28 September around midday (peak 7,993.7\,kW at 13:00, 1.39$\times$ the average).
+
+\fig{5_1_daily_profile}{0.85}{Average 15-minute network demand profile, weekday vs weekend}
+
+Weekdays peak around 13:00, while weekends peak later and lower (around 18:45), which points to commercial and industrial load during working hours.
+
+\subsection{Regions and Customer Types}
+
+Energy was divided by the number of \emph{registered} meters in each group so that groups of different sizes can be compared fairly.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Customer type} & \textbf{Meters} & \textbf{\% of meters} & \textbf{\% of energy} & \textbf{kWh per meter} \\
+\midrule
+Industrial & 406 & 10.15 & 57.62 & 5,469.6 \\
+Commercial & 1,010 & 25.25 & 21.42 & 817.3 \\
+Residential & 2,584 & 64.60 & 20.96 & 312.5 \\
+\bottomrule
+\end{tabular}
+\caption{Energy by customer type}
+\end{table}
+
+\fig{5_2_region_per_meter}{0.75}{Energy per registered meter by region}
+
+An industrial meter uses \textbf{17.5$\times$} the energy of a residential one. Every region has 400 meters, yet energy per meter varies by up to 1.55$\times$ (Region 8: 1,258.7\,kWh vs Region 4: 811.0\,kWh). This is explained by the customer mix: the correlation with each region's industrial share is \textbf{r = 0.97}.
+
+\subsection{Reporting Quality}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Measure} & \textbf{Value} \\
+\midrule
+Network completeness & 98.99\,\% \\
+Range across regions & 98.97\,\% (Region 6) -- 99.01\,\% (Region 8) \\
+21 Sep total known at midnight & 149,400.545\,kWh \\
+21 Sep final total (all arrivals) & 149,552.723\,kWh \\
+Difference caused by late arrivals & 152.178\,kWh (0.10\,\%) \\
+\bottomrule
+\end{tabular}
+\caption{Completeness and on-time vs final daily totals}
+\end{table}
+
+Missing readings are spread evenly across regions, so regional comparisons are not biased. \textbf{Delays} make an early report temporarily low (the last 21 September reading arrived at 02:45), while \textbf{missing} readings lower totals permanently and have about ten times the effect. Daily totals should be published as provisional at midnight and final after about three hours.
+
+\subsection{Anomaly Detection}
+
+For each meter, 15-minute time slot and day type (weekday/weekend), the baseline is the median power over the 28 days. Each reading's ratio $= \text{power\_kw} / \text{baseline}$ is flagged if it is $\geq 2.0$ (spike) or $\leq 0.3$ (drop). The thresholds were chosen from the ratio distribution before looking at the labels: 99.99\,\% of ratios lie between 0.765 and 1.294.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Flagged readings & 474 (236 high, 238 low) on 40 meters \\
+Injected events detected & 40 / 40 (20 spikes, 20 drops) \\
+Missed events & 0 \\
+False flags & 0 of 10,643,261 normal readings \\
+\bottomrule
+\end{tabular}
+\caption{Anomaly detection compared with \texttt{anomaly\_events()}}
+\end{table}
+
+\fig{5.4_c_examples_chart}{0.8}{Example meters: actual power vs baseline during a spike and a drop}
+
+Every injected event changed power by a large factor for three hours, so all were found. A milder anomaly (for example +50\,\%) would be missed; this is the price of conservative thresholds.
+
+% ==================================================
+\section{Continuous Aggregates}
+
+\subsection{Design}
+
+A continuous aggregate stores pre-computed group totals and refreshes them incrementally, so dashboards do not have to re-scan millions of raw rows. Three views were created with \texttt{sql/12\_continuous\_aggregates.sql}, then refreshed manually over the whole period by \texttt{src/caggs\_refresh.py}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrrr}
+\toprule
+\textbf{View} & \textbf{Bucket and group} & \textbf{Rows} & \textbf{Refresh} & \textbf{Size} \\
+\midrule
+\texttt{energy\_15min\_region} & 15 min $\times$ region & 26,880 & 108.19\,s & 4.15\,MB \\
+\texttt{energy\_hourly\_region} & 1 hour $\times$ region & 6,720 & 52.00\,s & 1.23\,MB \\
+\texttt{energy\_daily\_meter} & 1 day $\times$ meter & 112,000 & 27.84\,s & 12.55\,MB \\
+\midrule
+\textbf{Total} & & \textbf{145,600} & \textbf{188.03\,s} & \textbf{17.93\,MB} \\
+\bottomrule
+\end{tabular}
+\caption{Continuous aggregates: rows, initial refresh time and storage}
+\end{table}
+
+The three views use 17.93\,MB, about 1.3\,\% of the raw table. Refresh policies were then added with a 3-day lookback, a 1-hour end offset and a 15-minute schedule.
+
+\subsection{Freshness and Delayed Arrivals}
+
+\texttt{src/freshness\_test.py} inserted test readings into an older hour and the latest completed hour H, and checked the aggregate after each step.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Stage} & \textbf{Older hour} & \textbf{Hour H} \\
+\midrule
+1. Older hour refreshed, real-time off & 1\,kWh & no bucket \\
+2. New inserts, no refresh, real-time off & 1\,kWh & no bucket \\
+3. Real-time on, still no refresh & 1\,kWh & 2\,kWh \\
+4. Both hours refreshed & 1.5\,kWh & 2\,kWh \\
+\bottomrule
+\end{tabular}
+\caption{Aggregate results at each freshness stage (raw data: 1.5\,kWh and 2\,kWh)}
+\end{table}
+
+Inserts never change stored buckets. Real-time aggregation only adds raw data \emph{after} the newest stored bucket, so hour H appeared but the late 0.5\,kWh in the older hour did not; only a refresh covering that hour corrected it. The 3-day lookback is what lets delayed readings reach the aggregates.
+
+% ==================================================
+\section{Dashboards}
+
+\subsection{Raw and Aggregate Dashboards}
+
+Grafana runs in Docker and is provisioned from files. Two dashboards with the same five panels, CAT time zone and a \texttt{\$meter} filter were generated by \texttt{src/dashboards.py}: the \textbf{Raw} dashboard reads \texttt{energy\_readings}, the \textbf{Aggregate} dashboard reads the three continuous aggregates.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Panel} & \textbf{Raw dashboard reads} & \textbf{Aggregate dashboard reads} \\
+\midrule
+Hourly regional energy & \texttt{energy\_readings} + \texttt{meters} & \texttt{energy\_hourly\_region} \\
+Daily network energy & \texttt{energy\_readings} & \texttt{energy\_daily\_meter} \\
+Energy per seven-day period & \texttt{energy\_readings} & \texttt{energy\_daily\_meter} \\
+Daily energy, selected meter & \texttt{energy\_readings} & \texttt{energy\_daily\_meter} \\
+Completeness by region & \texttt{energy\_readings} + \texttt{meters} & \texttt{energy\_15min\_region} \\
+\bottomrule
+\end{tabular}
+\caption{Panel sources on the two dashboards}
+\end{table}
+
+\fig{7.1_raw_dashboard}{1.0}{Raw dashboard, 22--29 September, meter 1000000000}
+\fig{7.2_a_aggregate_dashboard}{1.0}{Aggregate dashboard, same range and meter}
+
+\subsection{Verification}
+
+\texttt{src/verify\_dashboards.py} sent every panel query of both dashboards through Grafana's query API and compared the answers value by value.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrl}
+\toprule
+\textbf{Panel} & \textbf{Values compared} & \textbf{Max difference} & \textbf{Result} \\
+\midrule
+Hourly regional energy & 3,360 & 0.000000000 & PASS \\
+Daily network energy & 14 & 0.000000005 & PASS \\
+Seven-day period & 2 & 0.000000012 & PASS \\
+Daily energy, meter 1000000000 & 14 & 0.000000000 & PASS \\
+Completeness by region & 30 & 0.000000000 & PASS \\
+\bottomrule
+\end{tabular}
+\caption{Raw vs Aggregate verification}
+\end{table}
+
+Both dashboards return the same values; the tiny differences are floating-point rounding.
+
+\subsection{Performance}
+
+\texttt{src/dashboard\_timing.py} drove headless Chrome with Playwright, paused all background jobs, disabled the browser cache and refreshed each dashboard once as a warm-up and then 10 measured times, alternating Raw and Aggregate.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Panel (median, ms)} & \textbf{Raw} & \textbf{Aggregate} & \textbf{Speed-up} \\
+\midrule
+Hourly regional energy & 12,106 & 361 & 33.6$\times$ \\
+Daily network energy & 8,964 & 272 & 33.0$\times$ \\
+Seven-day period & 10,289 & 222 & 46.3$\times$ \\
+Daily energy, one meter & 182 & 249 & 0.7$\times$ \\
+Completeness by region & 6,400 & 222 & 28.8$\times$ \\
+\midrule
+\textbf{Whole dashboard} & \textbf{12,891} & \textbf{493} & \textbf{26.1$\times$} \\
+\bottomrule
+\end{tabular}
+\caption{Dashboard refresh times over 10 measured refreshes}
+\end{table}
+
+\fig{7.4_a_timing_output}{0.75}{Dashboard timing output: per-panel and whole-dashboard statistics}
+
+The Aggregate dashboard loads in about \textbf{0.5\,s instead of 12.9\,s}. The single-meter panel gains nothing because on the raw table it is already a fast index lookup. The aggregates cost 17.93\,MB and a one-off 188\,s refresh; since each Aggregate refresh saves about 12.4\,s, this cost is recovered after about 15 dashboard refreshes.
+
+% ==================================================
+\section{Day-Ahead Forecasting}
+
+\subsection{Dataset and Features}
+
+The goal is to forecast each region's hourly energy for the next day, with the forecast made at 00:00 CAT. \texttt{src/forecast\_8\_1\_dataset.py} built one row per region and hour: \textbf{6,720 rows} (10 regions $\times$ 672 hours), with totals kept as observed and nothing filled in. Every feature uses only hours that ended before the forecast origin.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Feature} & \textbf{Meaning} \\
+\midrule
+\texttt{lag\_24h}, \texttt{lag\_48h} & Same hour 1 and 2 days earlier \\
+\texttt{lag\_168h} & Same hour one week earlier \\
+\texttt{prev\_day\_mean} & Average hour of the previous day \\
+\texttt{prev\_week\_same\_hour\_mean} & Average of the same hour over the previous 7 days \\
+\texttt{hour}, \texttt{dow}, \texttt{region} & Calendar and category (no lag) \\
+\bottomrule
+\end{tabular}
+\caption{Forecast features}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Split (chronological)} & \textbf{Rows} & \textbf{Usable rows} \\
+\midrule
+Train, 1--14 Sep & 3,360 & 1,680 \\
+Validation, 15--21 Sep & 1,680 & 1,680 \\
+Test, 22--28 Sep & 1,680 & 1,680 \\
+\bottomrule
+\end{tabular}
+\caption{Chronological splits (training rows from 1--7 Sep lack a week of history)}
+\end{table}
+
+\subsection{Baseline and Model}
+
+The \textbf{baseline} forecasts each hour as the same hour of the previous day. The \textbf{model} is Ridge regression (scikit-learn) with standardised lag features and one-hot encoded region, hour and day of week. Four penalty strengths were compared on the validation week.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrr}
+\toprule
+\textbf{Config} & \textbf{Settings} & \textbf{Val. MAE (kWh)} & \textbf{Val. RMSE (kWh)} \\
+\midrule
+\textbf{R1 (selected)} & Ridge($\alpha$=0.1) & \textbf{4.442} & \textbf{5.645} \\
+R2 & Ridge($\alpha$=1.0) & 4.454 & 5.660 \\
+R3 & Ridge($\alpha$=10.0) & 4.968 & 6.363 \\
+R4 & Ridge($\alpha$=100.0) & 8.281 & 11.791 \\
+\bottomrule
+\end{tabular}
+\caption{Validation comparison of Ridge configurations}
+\end{table}
+
+R1 was saved to a file, reloaded and used for the 1,680 test predictions without any refitting.
+
+\subsection{Test Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Method} & \textbf{MAE} & \textbf{RMSE} & \textbf{MAE as \% of mean hour} \\
+\midrule
+Previous-day baseline & 42.708\,kWh & 79.403\,kWh & 7.23\,\% \\
+Ridge R1 & \textbf{4.557\,kWh} & \textbf{5.798\,kWh} & \textbf{0.77\,\%} \\
+\bottomrule
+\end{tabular}
+\caption{Test metrics, 22--28 September (1,680 predictions)}
+\end{table}
+
+\fig{8.4_c_forecast_plot}{1.0}{Region 1: actual vs baseline vs model over the seven test days}
+
+The model cuts MAE by \textbf{89.3\,\%} and RMSE by \textbf{92.7\,\%}, and wins in every region. The gain comes from the day-type switches: on Saturday and Monday the baseline misses by about 136--139\,kWh per hour, while the model stays at 3.6--4.9\,kWh. At each region's peak hour the mean absolute error was 6.3\,kWh for the model against 159.9\,kWh for the baseline. Seven of the ten regional peaks fell on Monday 28 September, exactly when the baseline fails.
+
+% ==================================================
+\section{Business Insights}
+
+This section answers the business questions from Section~2 and gives the management recommendation.
+
+\begin{longtable}{p{4cm}p{10.5cm}}
+\toprule
+\textbf{Question} & \textbf{Finding} \\
+\midrule
+\endhead
+Reliable ingestion? & Yes, after the fix. A slow subscriber lost 183 of 2,000 messages in the broker; with a separate database-writer thread and paced publishing, 2,000 of 2,000 arrived (confirmed again by the README rerun). \\
+\addlinespace
+Data quality? & 98.99\,\% complete; 0.50\,\% duplicates (removed); 2.00\,\% delayed; 1.01\,\% missing (kept as gaps, never zero). \\
+\addlinespace
+Best chunk interval? & One day: never the slowest and within 2\,\% of the best on four of five queries. \\
+\addlinespace
+Best compression? & Segment by \texttt{meter\_id} after 48 hours: 63\,\% less storage, per-meter aggregation 1,304.6 $\rightarrow$ 268.4\,ms, single-meter lookups still fast (4.1\,ms). \\
+\addlinespace
+When is demand highest? & Weekday middays; peak Monday 28 Sep 13:00 (7,993.7\,kW). Weekends are 21.3\,\% lower; demand grows about 2\,\% per week. \\
+\addlinespace
+Who drives demand? & Industrial customers: 10\,\% of meters, 57.6\,\% of energy. Regional differences follow the industrial share (r = 0.97); Region 8 is the largest. \\
+\addlinespace
+Anomaly detection? & The median-ratio rule found 40 of 40 injected events with no false flags. \\
+\addlinespace
+Faster dashboards? & Continuous aggregates: 26.1$\times$ faster (493 vs 12,891\,ms) with identical results, for 17.93\,MB of storage. Single-meter panels should stay on the raw table. \\
+\addlinespace
+Better forecasts? & Yes. Ridge regression: MAE 4.557\,kWh vs 42.708\,kWh (89\,\% lower), peak-hour error 6.3 vs 159.9\,kWh. \\
+\bottomrule
+\caption{Answers to the business questions}
+\end{longtable}
+
+\textbf{Management recommendation.} Plan capacity for weekday middays and Monday restarts, and allow for continued growth. Start demand-response programmes with industrial customers and Region 8. Monitor completeness per meter daily and publish daily reports at 03:00 CAT, after late readings have arrived. Store data in one-day chunks compressed by meter after 48 hours, build dashboards on continuous aggregates, and adopt the Ridge model for day-ahead regional forecasts, run at 03:00 CAT with a peak margin of about 3\,\% and retrained weekly.
+
+% ==================================================
+\section{Reproducibility and Contributions}
+
+\subsection{Reproducibility}
+
+The repository and the submitted ZIP archive (\fillin{Assignment\_I\_submission.zip}, created with \texttt{git archive}) contain the same files. \texttt{README.md} gives the set-up and execution order: start the containers, create the database and schema, run the pilot, load and clean the data, then run the chunk, compression, analysis, aggregate, dashboard and forecast scripts. Following README section 4 on 9 October 2026, the pilot was rerun from scratch and again reached \textbf{2,000 at every stage}.
+
+\fig{9.2_pilot_rerun}{1.0}{Pilot rerun from the README: publisher, subscriber and \texttt{energy\_live} count all 2,000}
+
+\subsection{Group Contributions}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{3cm}p{1.6cm}p{9cm}}
+\toprule
+\textbf{Member} & \textbf{ID} & \textbf{Contributions} \\
+\midrule
+\fillin{Name 1} & \fillin{ID} & Ingestion and data preparation: environment, schema, MQTT pilot and fix, bulk load, data quality, cleaning, README \\
+\fillin{Name 2} & \fillin{ID} & Storage and performance: chunk-interval benchmark, compression experiment, continuous aggregates, freshness test \\
+\fillin{Name 3} & \fillin{ID} & Analysis, dashboards and forecasting: demand, regional, quality and anomaly analysis, Grafana dashboards, forecast model \\
+All members & & Report writing and review \\
+\bottomrule
+\end{tabular}
+\caption{Member contributions}
+\end{table}
+
+% ==================================================
+\section{Limitations}
+
+\begin{enumerate}
+\item \textbf{Single machine:} All services share one 4-CPU Docker virtual machine, so benchmark times reflect a laptop, not a production server.
+\item \textbf{Synthetic data:} The generator does not model holidays, weather or real customer behaviour changes, which would create more variation and false anomaly alarms.
+\item \textbf{Short period:} 28 days of data; the forecast model was trained on only one week of usable rows and should be retrained regularly.
+\item \textbf{Missing readings:} About 1\,\% of readings never arrive, so hourly totals and forecast targets are slightly below true demand (about 6\,kWh per hour).
+\item \textbf{Delayed arrivals in live use:} The forecast test used final data; at midnight the last hours of the previous day are still incomplete, so the forecast should run at about 03:00 CAT.
+\item \textbf{Bulk load path:} The full dataset was loaded with \texttt{COPY} from CSV rather than through MQTT, because publishing 10.7 million messages would take hours; the MQTT path was proven with the pilot.
+\item \textbf{Conservative anomaly thresholds:} The rule detects large spikes and drops; milder anomalies (for example +50\,\%) would be missed.
+\end{enumerate}
+
+% ==================================================
+\section{Conclusion}
+
+This project built and evaluated a complete smart-grid data pipeline on a single machine. The MQTT pilot showed that broker acknowledgements alone do not guarantee delivery: a slow subscriber lost 183 messages until database writing was moved to a separate thread, after which every reading arrived. The full dataset of 10,696,848 readings was loaded without loss, measured against the reference counts and cleaned of 53,113 duplicates, while missing readings were kept as gaps.
+
+On the storage side, one-day chunks compressed by meter after 48 hours gave the best balance: 63\,\% less storage, two to five times faster aggregations and fast single-meter lookups. Continuous aggregates made the dashboards 26 times faster for 18\,MB of extra storage, with results identical to the raw data.
+
+The analysis showed a 21\,\% weekend drop, steady growth of about 2\,\% per week, and demand driven by industrial customers, with data 98.99\,\% complete and gaps spread evenly. Finally, a Ridge regression that knows the weekly pattern cut the day-ahead forecast error from 42.7 to 4.6\,kWh per hour, making it useful for regional planning provided it runs after late readings have arrived.
+
+% ==================================================
+\section{References}
+
+\begin{enumerate}
+\item TimescaleDB. (2026). \textit{TimescaleDB Documentation: Hypertables, Compression and Continuous Aggregates}. Retrieved from \url{https://docs.timescale.com}
+\item EMQX. (2026). \textit{EMQX Documentation}. Retrieved from \url{https://docs.emqx.com}
+\item Grafana Labs. (2026). \textit{Grafana Documentation: Provisioning and PostgreSQL Data Source}. Retrieved from \url{https://grafana.com/docs/grafana/latest/}
+\item Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in Python. \textit{Journal of Machine Learning Research}, 12, 2825--2830.
+\item \fillin{Lecturer name}. (2026). \textit{Advanced Big Data Analytics --- Assignment I: Smart Energy Grid Analytics}. Adventist University of Central Africa (AUCA).
+\end{enumerate}
+
+% ==================================================
+\section*{Execution Evidence}
+\addcontentsline{toc}{section}{Execution Evidence}
+
+The key screenshots appear in the sections above. All 63 screenshots, each showing the executed command, its result, the taskbar and the clock, are stored in the \texttt{Screenshoots/} folder of the repository and listed below.
+
+{\small
+\begin{longtable}{p{7.4cm}p{7.6cm}}
+\toprule
+\textbf{File} & \textbf{Shows} \\
+\midrule
+\endhead
+\texttt{env\_creation} & Python virtual environment and requirements \\
+\texttt{1.1\_a\_broker\_running} & EMQX and TimescaleDB containers running \\
+\texttt{1.1\_b\_database\_extension\_timezone} & Database, extension and CAT time zone \\
+\texttt{1.1\_c\_environment\_2} & Hardware, versions and PostgreSQL settings \\
+\texttt{1.2\_a\_tables\_1}, \texttt{1.2\_a\_tables\_2} & Table definitions and hypertable chunk interval \\
+\texttt{1.2\_c/d\_meters\_count} & 4,000 meters loaded \\
+\texttt{1.3\_run1\_emqx\_dropped} & Run 1: 183 messages dropped by the broker \\
+\texttt{1.3\_run2\_publisher\_subscriber} & Run 2: 2,000 published and received \\
+\texttt{1.3\_run2\_emqx\_metrics} & Run 2: no new drops \\
+\texttt{1.3\_db\_count\_sample} & 2,000 rows in \texttt{energy\_live} \\
+\texttt{2.1\_a} to \texttt{2.1\_d} & Expected counts, generation, load, database checks, chunk ranges \\
+\texttt{2.2\_a\_dq\_summary}, \texttt{2.2\_b\_delays\_top\_missing} & Data-quality counts, delays, worst meters \\
+\texttt{2.3\_a} to \texttt{2.3\_c} & Duplicate investigation, cleaning result, repeat run \\
+\texttt{3.1\_a} to \texttt{3.1\_c} & Building and checking the three chunk configurations \\
+\texttt{3.2\_0\_jobs\_before}, \texttt{3.2\_a\_benchmark\_results} & Background jobs and benchmark medians \\
+\texttt{3.2\_b\_plan\_3h}, \texttt{3.2\_d\_plan\_week} & Query plans on the 3-hour and 7-day tables \\
+\texttt{4.1\_a} to \texttt{4.1\_e} & Compression set-up, settings, policies and checks \\
+\texttt{4.2\_a\_storage}, \texttt{4.2\_b\_storage} & Storage and compression ratios \\
+\texttt{4.3\_a\_benchmark\_results} & Compressed vs uncompressed query medians \\
+\texttt{4.3\_b\_plan\_time\_compressed\_top/bottom} & Q4 plan on the time-ordered table \\
+\texttt{4.3\_c\_plan\_meter\_compressed} & Q4 plan on the meter-segmented table \\
+\texttt{4.3\_d\_policies\_resumed} & Compression policies resumed \\
+\texttt{5.1\_a\_analysis\_output} & Daily, weekly and peak-interval results \\
+\texttt{5.2\_a\_group\_counts\_comparison} & Customer type and region comparison \\
+\texttt{5.3\_a\_completeness\_daily\_totals} & Completeness and on-time vs final totals \\
+\texttt{5.4\_a\_detection}, \texttt{5.4\_b\_evaluation} & Anomaly thresholds, flags and evaluation \\
+\texttt{5.4\_c\_examples\_chart} & Spike and drop examples \\
+\texttt{6.1\_a} to \texttt{6.1\_d} & Aggregate creation, refresh, definitions, policies \\
+\texttt{6.2\_a\_definitions}, \texttt{6.2\_b\_stages} & Freshness test set-up and stages \\
+\texttt{7.1\_raw\_dashboard}, \texttt{7.2\_a\_aggregate\_dashboard} & The two dashboards \\
+\texttt{7.2\_b\_panel\_queries}, \texttt{7.2\_c\_raw\_panel\_query} & Aggregate and raw panel queries \\
+\texttt{7.3\_dashboard\_verification} & All five panels PASS \\
+\texttt{7.4\_a\_timing\_output}, \texttt{7.4\_b\_jobs\_resumed} & Dashboard timing and jobs resumed \\
+\texttt{8.1\_dataset\_features\_splits} & Forecast dataset, features and splits \\
+\texttt{8.2\_baseline} & Baseline predictions and metrics \\
+\texttt{8.3\_model\_validation\_test} & Ridge validation and test predictions \\
+\texttt{8.4\_a\_metrics\_peak\_hours}, \texttt{8.4\_c\_forecast\_plot} & Final comparison and forecast plot \\
+\texttt{9.2\_pilot\_rerun} & Pilot rerun from the README \\
+\bottomrule
+\caption{List of execution screenshots}
+\end{longtable}}
+
+\end{document}

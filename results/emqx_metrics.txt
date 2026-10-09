@@ -1,0 +1,112 @@
+actions.executed              : 0
+actions.messages              : 0
+authentication.failure        : 0
+authentication.success        : 2
+authentication.success.anonymo: 0
+authorization.allow           : 2001
+authorization.cache_hit       : 6
+authorization.cache_miss      : 1995
+authorization.deny            : 0
+authorization.matched.allow   : 1995
+authorization.matched.deny    : 0
+authorization.nomatch         : 0
+authorization.superuser       : 0
+bytes.received                : 530475
+bytes.sent                    : 483237
+client.auth.anonymous         : 0
+client.authenticate           : 2
+client.authorize              : 1995
+client.banned                 : 0
+client.connack                : 0
+client.connect                : 2
+client.connected              : 2
+client.disconnected           : 2
+client.post_authn             : 2
+client.subscribe              : 1
+client.unsubscribe            : 0
+delivery.dropped              : 183
+delivery.dropped.expired      : 0
+delivery.dropped.filter       : 0
+delivery.dropped.no_local     : 0
+delivery.dropped.qos0_msg     : 0
+delivery.dropped.queue_full   : 183
+delivery.dropped.too_large    : 0
+flapping.detected.clientid    : 0
+flapping.detected.peerhost    : 0
+flapping.detected.username    : 0
+messages.acked                : 1817
+messages.delayed              : 0
+messages.delivered            : 1817
+messages.dropped              : 0
+messages.dropped.await_pubrel_: 0
+messages.dropped.no_subscriber: 0
+messages.dropped.quota_exceede: 0
+messages.dropped.receive_maxim: 0
+messages.forward              : 0
+messages.persisted            : 0
+messages.publish              : 2000
+messages.qos0.received        : 0
+messages.qos0.sent            : 0
+messages.qos1.received        : 2000
+messages.qos1.sent            : 1817
+messages.qos2.received        : 0
+messages.qos2.sent            : 0
+messages.received             : 2000
+messages.retained             : 381
+messages.sent                 : 1817
+messages.transformation_failed: 0
+messages.transformation_succee: 0
+messages.validation_failed    : 0
+messages.validation_succeeded : 0
+overload_protection.delay.ok  : 0
+overload_protection.delay.time: 0
+overload_protection.gc        : 0
+overload_protection.hibernatio: 0
+overload_protection.new_conn  : 0
+packets.auth.received         : 0
+packets.auth.sent             : 0
+packets.connack.auth_error    : 0
+packets.connack.error         : 0
+packets.connack.sent          : 2
+packets.connect.received      : 2
+packets.disconnect.received   : 2
+packets.disconnect.sent       : 0
+packets.pingreq.received      : 1
+packets.pingresp.sent         : 1
+packets.puback.inuse          : 0
+packets.puback.missed         : 0
+packets.puback.received       : 1817
+packets.puback.sent           : 2000
+packets.pubcomp.inuse         : 0
+packets.pubcomp.missed        : 0
+packets.pubcomp.received      : 0
+packets.pubcomp.sent          : 0
+packets.publish.auth_error    : 0
+packets.publish.error         : 0
+packets.publish.inuse         : 0
+packets.publish.quota_exceeded: 0
+packets.publish.received      : 2000
+packets.publish.sent          : 1817
+packets.pubrec.inuse          : 0
+packets.pubrec.missed         : 0
+packets.pubrec.received       : 0
+packets.pubrec.sent           : 0
+packets.pubrel.missed         : 0
+packets.pubrel.received       : 0
+packets.pubrel.sent           : 0
+packets.received              : 3823
+packets.sent                  : 3821
+packets.suback.sent           : 1
+packets.subscribe.auth_error  : 0
+packets.subscribe.error       : 0
+packets.subscribe.received    : 1
+packets.unsuback.sent         : 0
+packets.unsubscribe.error     : 0
+packets.unsubscribe.received  : 0
+rules.matched                 : 0
+session.created               : 2
+session.discarded             : 0
+session.disconnected          : 2
+session.resumed               : 0
+session.takenover             : 0
+session.terminated            : 2
